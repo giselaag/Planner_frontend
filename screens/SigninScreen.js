@@ -2,16 +2,41 @@
 import { Button, StyleSheet, Text, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { MainButton, SecondaryButton } from '../components/Button';
 import globalStyles from '../styles/GlobalStyles';
-import { CustomInput } from '../components/Input';
+import  CustomInput  from '../components/Input';
 import { useState } from "react";
 import {SignIn} from "../api/auth"
 
 
 export default function SigninScreen({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const apiUrl = process.env.EXPO_PUBLIC_BACKEND_IP;
 
-  //TO DO: repeat from signup
+  const [signinUsername, setSigninUsername] = useState("");
+  const [signinPassword, setSigninPassword] = useState("");
+
+//EXISTING ACCOUNT
+
+const handleLogin = () => {
+  fetch(`${apiUrl}/users/signin`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username: signinUsername,
+      password: signinPassword,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      if (data.result) {
+        console.log("navigating");
+        navigation.navigate("TabNavigator");
+      } else {
+        console.log(data.message);
+      }
+    });
+};
 
  return (
   <KeyboardAvoidingView
@@ -19,11 +44,11 @@ export default function SigninScreen({ navigation }) {
   style={globalStyles.container}
 >
      <Text>Signin Screen</Text>
-     <CustomInput value={email} onChangeText={setEmail} placeholder="email" />
-      <CustomInput value={password} onChangeText={setPassword} placeholder="password" />
+     <CustomInput value={signinUsername} onChangeText={setSigninUsername} placeholder="username" />
+      <CustomInput value={signinPassword} onChangeText={setSigninPassword} placeholder="password" />
       <MainButton
         title="Sign in"
-        onPress={() => navigation.navigate('Signup')}
+        onPress={() => handleLogin()} 
       />
      <Text>No account yet?</Text>
      

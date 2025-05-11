@@ -8,25 +8,26 @@ import {
 } from "react-native";
 import Colors from "../styles/Colors";
 
-// INPUT
-export const CustomInput = ({
-  value,
-  onChangeText,
-  placeholder,
-  style,
-  inputStyle,
-  containerStyle,
-}) => (
-  <View style={[styles.inputContainer, containerStyle]}>
-    <TextInput
-      style={[styles.input, inputStyle]}
-      value={value}
-      onChangeText={onChangeText}
-      placeholder={placeholder}
-      placeholderTextColor={Colors.placeholder}
-    />
-  </View>
-);
+export default function CustomInput(props) {
+  const { validator, onChangeText, style, ...rest } = props;
+
+  const handleChange = (rawText) => {
+    //check if there is a validator function in parent
+    const text = validator ? validator(rawText) : rawText;
+    onChangeText && onChangeText(text); //use clean text
+  };
+
+  return (
+    <View style={styles.inputContainer}>
+      <TextInput
+        {...rest}
+        onChangeText={handleChange}
+        style={styles.input}
+        placeholderTextColor={Colors.placeholder}
+      />
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   inputContainer: {
